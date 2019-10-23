@@ -1,43 +1,120 @@
+//Pseudo code
+//window.onload or document.ready, there will be multiple buttons with existing topics on the screen
+//=>Create var with all topics, get the API key and 
+//=>Create all those buttons with the different topics  function createbuttons, and call it so many times?
+//There will be an area where you store all the images  function storeImages?
+//=>prepend imageVar to the image element in html (image from ajax call)
+
+//clicks
+//1.When clicking on the topics buttons, need to get 10 images from giphy api query q,limit,rating
+//=>Get query url,api key, use ajax to get the initial 10 still images urls
+//=>get query url should be a function?
+//=>Also need to store url of the animated images newVar?
+//=>Write the images into html
+//=>Create image holder element, add src attribute to the element with the still url and animated url
+//2.When clicking on the still image, needs to toggl that image into animate state
+//=>on click, if an image is still, change it to animate, if an image is animated, change it to still.
+//add class for these images?
+
+//Add search
+//There will be a *card* with a search or submit button for searching images for the new topics
+//=>create form with user input and submit button, grab value from user input and modify the query string,
+//=>get the new query url, ajax to get new images.
+
 $(document).ready(function () {
 
     //declare array of topics
-    let topics = ["swing+dance", "modern+dance", "tango", "waltz", "foxtrot", "hiphop+dance", "ballet", "rumba", "poll+dance"]
-    //get api key = oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk 
-    let apiKey = "oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk"
-    //declare query url variable      https://api.giphy.com/v1/gifs/search
-    //https://api.giphy.com/v1/gifs/search
-    //need to do for loop
-    let queryURL = "https://api.giphy.com/v1/gifs/search?q=" + topics[0] + "&api_key=" + apiKey;
+    let topics = ["crying", "dancing", "eating", "falling", "finger+guns", "laughing", "middle+finger", "sleeping", "smiling"];
+    let numOfImages = 10;
+    let rating = "pg";
+    //loop through the topics array and generate buttons, and write them into html
+    function writeBtns() {
+        //$("#btnsDiv").empty();
+        for (let i = 0; i < topics.length; i++) {
+            let newBtn = $('<button>');
+            newBtn.addClass('topic-btn');
+            newBtn.attr("type", "button");
+            newBtn.attr("data-topic", topics[i]);
+            newBtn.text(topics[i]);
+            $("#btnsDiv").append(newBtn);
+            console.log(newBtn);
+        }
+        //return;
+    }
+    writeBtns();
 
-    console.log(queryURL);
-    //write buttons
-    let newBtn = $('<button>');
-    newBtn.addClass('topic-btn');
-    $("#btns").append(newBtn);
-    //on click function
-    $(".topic-btn").on("click", function () {
+    function displayImages() {
+        //get api key = oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk 
+        let apiKey = "oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk";
+        //declare query url variable, should I have limit to 10 or not?  
+        $("#imgs-information").empty();
 
-
-        //write images
+        let topic = $(this).attr("data-topic");
+        //console.log($this());
+        console.log(topic);
+        let queryURL = "https://api.giphy.com/v1/gifs/search?limit=" + numOfImages + "&rating=" + rating + "&q=" + topic + "&api_key=" + apiKey;
+        console.log(queryURL)
+        //Use ajax to get the response, and the image urls that we need
         $.ajax({
             url: queryURL,
             method: "GET"
         }).then(function (response) {
             console.log(response);
-            //something's wrong with the below one the data[0] index isn't dorrect 
-            //may need to do for loop
-            let imageURL = response.data[0].images.fixed_height_still.url;
-            console.log(response.data.images.fixed_height_still.url);
-            let danceImage = $("<img>")
-            danceImage.attr("src", imageURL);
-            $("#imgs").prepend(danceImage);
+            //If you use response.data[0].images.original.url, it doesn't work, but if you put response.data into var results, it works. 
+            let results = response.data;
+            console.log(results);
+            for (let j = 0; j < numOfImages; j++) {
+                //grab initial url to be the still image url
+                let stillImageURL = results[j].images.fixed_height_still.url;
+                let animateImageURL = results[j].images.fixed_height.url;
+                console.log(stillImageURL);
+
+                //create new div holder to hold each image and its rating
+                let imageDiv = $("<div>")
+                imageDiv.addClass("singleImageDiv");
+                imageDiv.append("<p>Rating:" + results[j].rating);
+
+                //create new image element holder to hold each image
+                let actionImage = $("<img>");
+                actionImage.addClass("actionImage");
+                //add the stillImageURL as src attribute to the image var
+                actionImage.attr("src", stillImageURL);
+                //add state attribute to indicate whether the image is still or animated
+                actionImage.attr("state", "still")
+                //add attribute still and animated, to store the url of image in two states
+                actionImage.attr("still", results[j].images.fixed_height_still.url);
+                actionImage.attr("animate", results[j].images.fixed_height.url);
+                //prepend image to the new imageDiv
+                imageDiv.prepend(actionImage);
+                //append the new div to html
+                $("#imgs-information").append(imageDiv);
+                //return animateImageURL;
+                //return stillImageURL;
+
+                //When user click the image, change the state of the image
+                $(".actionImage").on("click", function () {
+                    //this is not defined????
+                    if ($this().attr("state") = "still") {
+                        //Below doesn't work, seems like animateImageURL cannot be found here
+                        actionImage.attr("src", animateImageURL);
+                        $this().attr("state", "animate");
+                    } else if ($this().attr("state") = "animate") {
+                        //Below doesn't work, seems like animateImageURL cannot be found here
+                        actionImage.attr("src", stillImageURL);
+                        $this().attr("state", "still");
+
+                    }
+                });
+            }
 
         });
-        //click images, will animate, click animated images, will stay still??? Image object?
-        //add form
+    }
 
-    })
+    //When clicking the button, display image
+    $(document).on("click", ".topic-btn", displayImages);
 
-
-
+    //Add new form for user to search
+    // $(document).on("click", "#find-topic", function () {
+    //     let newTopic = $("topic-input").val();
+    // })
 })
