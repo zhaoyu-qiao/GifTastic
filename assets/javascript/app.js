@@ -20,101 +20,115 @@
 //There will be a *card* with a search or submit button for searching images for the new topics
 //=>create form with user input and submit button, grab value from user input and modify the query string,
 //=>get the new query url, ajax to get new images.
+//declare array of topics
+
+let topics = ["crying", "dancing", "eating", "falling", "finger+guns", "laughing", "middle+finger", "sleeping", "smiling"];
+let numOfImages = 10;
+let rating = "pg";
+//loop through the topics array and generate buttons, and write them into html
+function writeBtns() {
+    //$("#btnsDiv").empty();
+    for (let i = 0; i < topics.length; i++) {
+        let newBtn = $('<button>');
+        newBtn.addClass('topic-btn');
+        newBtn.attr("type", "button");
+        newBtn.attr("data-topic", topics[i]);
+        newBtn.text(topics[i]);
+        $("#btnsDiv").append(newBtn);
+        console.log(newBtn);
+    }
+}
+
+function displayImages() {
+    //event.preventDefault();
+
+    //get api key = oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk 
+    let apiKey = "oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk";
+    //declare query url variable, should I have limit to 10 or not?  
+    $("#imgs-information").empty();
+
+    let topic = $(this).attr("data-topic");
+    //console.log($this());
+    console.log(topic);
+    let queryURL = "https://api.giphy.com/v1/gifs/search?limit=" + numOfImages + "&rating=" + rating + "&q=" + topic + "&api_key=" + apiKey;
+    console.log(queryURL)
+    //Use ajax to get the response, and the image urls that we need
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    }).then(function (response) {
+        console.log(response);
+        //If you use response.data[0].images.original.url, it doesn't work, but if you put response.data into var results, it works. 
+        let results = response.data;
+        console.log(results);
+        for (let j = 0; j < numOfImages; j++) {
+            //grab initial url to be the still image url
+            let stillImageURL = results[j].images.fixed_height_still.url;
+            let animateImageURL = results[j].images.fixed_height.url;
+            console.log(stillImageURL);
+            console.log('result j', results[j]);
+            console.log(' j', j);
+
+            //create new div holder to hold each image and its rating
+            let imageDiv = $("<div>")
+            imageDiv.addClass("singleImageDiv");
+            imageDiv.append("<p>Rating:" + results[j].rating);
+
+            //create new image element holder to hold each image
+            let actionImage = $("<img>");
+            actionImage.addClass("actionImage");
+            actionImage.attr("id", j)
+            //add the stillImageURL as src attribute to the image var
+            actionImage.attr("src", stillImageURL);
+            //add state attribute to indicate whether the image is still or animated
+            actionImage.attr("data-toggle", animateImageURL);
+            //add attribute still and animated, to store the url of image in two states
+            //actionImage.attr("data-still", results[j].images.fixed_height_still.url);
+            //actionImage.attr("data-animate", results[j].images.fixed_height.url);
+            //prepend image to the new imageDiv
+            imageDiv.prepend(actionImage);
+            //append the new div to html
+            $("#imgs-information").append(imageDiv);
+            //return animateImageURL;
+            //return stillImageURL;
+            const testVariable = document.getElementById(j);
+            console.log(testVariable);
+        }
+
+        //When user click the image, change the state of the image
+        $(document).on("click", ".actionImage", function (e) {
+            //event.preventDefault();
+
+            let originalImageURL = $(this).attr("src");
+            $(this).attr("src", $(this).attr("data-toggle"));
+            $(this).attr("data-toggle", originalImageURL);
+
+        });
+    });
+}
 
 $(document).ready(function () {
 
-    //declare array of topics
-    let topics = ["crying", "dancing", "eating", "falling", "finger+guns", "laughing", "middle+finger", "sleeping", "smiling"];
-    let numOfImages = 10;
-    let rating = "pg";
-    //loop through the topics array and generate buttons, and write them into html
-    function writeBtns() {
-        //$("#btnsDiv").empty();
-        for (let i = 0; i < topics.length; i++) {
-            let newBtn = $('<button>');
-            newBtn.addClass('topic-btn');
-            newBtn.attr("type", "button");
-            newBtn.attr("data-topic", topics[i]);
-            newBtn.text(topics[i]);
-            $("#btnsDiv").append(newBtn);
-            console.log(newBtn);
-        }
-        //return;
-    }
     writeBtns();
-
-    function displayImages() {
-        //get api key = oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk 
-        let apiKey = "oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk";
-        //declare query url variable, should I have limit to 10 or not?  
-        $("#imgs-information").empty();
-
-        let topic = $(this).attr("data-topic");
-        //console.log($this());
-        console.log(topic);
-        let queryURL = "https://api.giphy.com/v1/gifs/search?limit=" + numOfImages + "&rating=" + rating + "&q=" + topic + "&api_key=" + apiKey;
-        console.log(queryURL)
-        //Use ajax to get the response, and the image urls that we need
-        $.ajax({
-            url: queryURL,
-            method: "GET"
-        }).then(function (response) {
-            console.log(response);
-            //If you use response.data[0].images.original.url, it doesn't work, but if you put response.data into var results, it works. 
-            let results = response.data;
-            console.log(results);
-            for (let j = 0; j < numOfImages; j++) {
-                //grab initial url to be the still image url
-                let stillImageURL = results[j].images.fixed_height_still.url;
-                let animateImageURL = results[j].images.fixed_height.url;
-                console.log(stillImageURL);
-
-                //create new div holder to hold each image and its rating
-                let imageDiv = $("<div>")
-                imageDiv.addClass("singleImageDiv");
-                imageDiv.append("<p>Rating:" + results[j].rating);
-
-                //create new image element holder to hold each image
-                let actionImage = $("<img>");
-                actionImage.addClass("actionImage");
-                //add the stillImageURL as src attribute to the image var
-                actionImage.attr("src", stillImageURL);
-                //add state attribute to indicate whether the image is still or animated
-                actionImage.attr("state", "still")
-                //add attribute still and animated, to store the url of image in two states
-                actionImage.attr("still", results[j].images.fixed_height_still.url);
-                actionImage.attr("animate", results[j].images.fixed_height.url);
-                //prepend image to the new imageDiv
-                imageDiv.prepend(actionImage);
-                //append the new div to html
-                $("#imgs-information").append(imageDiv);
-                //return animateImageURL;
-                //return stillImageURL;
-
-                //When user click the image, change the state of the image
-                $(".actionImage").on("click", function () {
-                    //this is not defined????
-                    if ($this().attr("state") = "still") {
-                        //Below doesn't work, seems like animateImageURL cannot be found here
-                        actionImage.attr("src", animateImageURL);
-                        $this().attr("state", "animate");
-                    } else if ($this().attr("state") = "animate") {
-                        //Below doesn't work, seems like animateImageURL cannot be found here
-                        actionImage.attr("src", stillImageURL);
-                        $this().attr("state", "still");
-
-                    }
-                });
-            }
-
-        });
-    }
 
     //When clicking the button, display image
     $(document).on("click", ".topic-btn", displayImages);
 
     //Add new form for user to search
-    // $(document).on("click", "#find-topic", function () {
-    //     let newTopic = $("topic-input").val();
-    // })
+    $(document).on("click", "#find-topic", function (event) {
+        // console.log('event', event);
+        // debugger;
+        //event.preventDefault();
+        console.log('hitting function')
+        //add new button based on the topic
+        let newTopic = $("#topic-input").val();
+        console.log(newTopic);
+        let newBtn = $('<button>');
+        newBtn.addClass('topic-btn');
+        newBtn.attr("type", "button");
+        newBtn.attr("data-topic", newTopic);
+        newBtn.text(newTopic);
+        $("#btnsDiv").append(newBtn);
+
+    })
 })
