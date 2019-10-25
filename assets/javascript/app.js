@@ -118,7 +118,7 @@ $(document).ready(function () {
     $(document).on("click", "#find-topic", function (event) {
         // console.log('event', event);
         // debugger;
-        //event.preventDefault();
+        event.preventDefault();
         console.log('hitting function')
         //add new button based on the topic
         let newTopic = $("#topic-input").val();
