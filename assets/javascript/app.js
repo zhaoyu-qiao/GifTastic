@@ -22,6 +22,9 @@
 //=>get the new query url, ajax to get new images.
 //declare array of topics
 
+//Referred to the click button activity, the cat button activity, and this code here:https://github.com/lkanand/GIFtastic/blob/master/assets/javascript/giphy-generator.js
+
+//Declare topics array and variables
 let topics = ["crying", "dancing", "eating", "falling", "finger+guns", "laughing", "middle+finger", "sleeping", "smiling"];
 let numOfImages = 10;
 let rating = "pg";
@@ -39,9 +42,8 @@ function writeBtns() {
     }
 }
 
-function displayImages() {
-    //event.preventDefault();
-
+function displayImages(event) {
+    event.preventDefault();
     //get api key = oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk 
     let apiKey = "oxadMDqAWPVIU1J5wQrvn4k7CinSNwyk";
     //declare query url variable, should I have limit to 10 or not?  
@@ -94,18 +96,12 @@ function displayImages() {
             const testVariable = document.getElementById(j);
             console.log(testVariable);
         }
-
+        //Issue: everytime you click the buttons, somehow the below one got swapped.?????
+        //This toggl function within the display image function somehow isn't triggered well.
         //When user click the image, change the state of the image
-        $(document).on("click", ".actionImage", function (e) {
-            //event.preventDefault();
-
-            let originalImageURL = $(this).attr("src");
-            $(this).attr("src", $(this).attr("data-toggle"));
-            $(this).attr("data-toggle", originalImageURL);
-
-        });
     });
 }
+
 
 $(document).ready(function () {
 
@@ -114,10 +110,18 @@ $(document).ready(function () {
     //When clicking the button, display image
     $(document).on("click", ".topic-btn", displayImages);
 
+    $(document).on("click", ".actionImage", function (e) {
+        //event.preventDefault();
+
+        let originalImageURL = $(this).attr("src");
+        $(this).attr("src", $(this).attr("data-toggle"));
+        $(this).attr("data-toggle", originalImageURL);
+    });
     //Add new form for user to search
     $(document).on("click", "#find-topic", function (event) {
         // console.log('event', event);
         // debugger;
+        // why do we have to have this preventDefault?
         event.preventDefault();
         console.log('hitting function')
         //add new button based on the topic
