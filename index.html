@@ -7,21 +7,34 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="assets/css/reset.css" />
     <link rel="stylesheet" href="assets/css/style.css" />
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="assets/javascript/app.js"></script>
     <title>Document</title>
 </head>
 
 <body>
-    <div id="btnsDiv">btns</div>
-    <div id="imgs-information">10 images</div>
+    <div id="header">
+        <h1>Have some fun with clicking! </h1>
+        <img id="giphy" src="http://giphygifs.s3.amazonaws.com/media/FgTqKY4QECTOU/giphy.gif" width="100" height="100">
+    </div>
+
+    <div id="buttons">
+
+        <div id="btnsDiv">
+            <p>Choose from these topics:</p><br />
+        </div>
+
+    </div>
     <form id="topic-form">
-        <label for="topic-input">Search for a topic</label>
+        <label id="new-search" for="topic-input">Search for a new topic:</label>
         <input type="text" id="topic-input"><br>
 
         <!-- This button will trigger new AJAX call -->
-        <input id="find-topic" type="submit" value="Topic Search">
+        <input id="find-topic" type="submit" class="topic-btn btn btn-outline-dark" value="Topic Search">
     </form>
+    <div id="imgs-information"></div>
 </body>
 
 </html>

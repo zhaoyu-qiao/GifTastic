@@ -33,10 +33,10 @@ function writeBtns() {
     //$("#btnsDiv").empty();
     for (let i = 0; i < topics.length; i++) {
         let newBtn = $('<button>');
-        newBtn.addClass('topic-btn');
+        newBtn.addClass('topic-btn btn btn-outline-dark');
         newBtn.attr("type", "button");
         newBtn.attr("data-topic", topics[i]);
-        newBtn.text(topics[i]);
+        newBtn.text(topics[i].toUpperCase());
         $("#btnsDiv").append(newBtn);
         console.log(newBtn);
     }
@@ -128,7 +128,7 @@ $(document).ready(function () {
         let newTopic = $("#topic-input").val();
         console.log(newTopic);
         let newBtn = $('<button>');
-        newBtn.addClass('topic-btn');
+        newBtn.addClass('topic-btn btn btn-outline-dark');
         newBtn.attr("type", "button");
         newBtn.attr("data-topic", newTopic);
         newBtn.text(newTopic);
